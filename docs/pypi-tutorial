@@ -48,7 +48,6 @@ hsreader/
 | hsreader/
     | __init__.py
     | __main__.py
-    | config.yml
     | download.py
     | show.py
 |
@@ -59,26 +58,20 @@ hsreader/
 | setup.py
 ```
 
+Możesz też pobrać całą paczkę [tutaj](https://github.com/szymon-datalions/hsreader)
+
 ### Zawartość plików w katalogu `hsreader`
 
 #### `__init__.py`
 
 ```python
-import os
-import yaml
 from hsreader.download import download
 from hsreader.show import show
 
-__version__ = '0.1.0'
+__version__ = '0.1.3'
 
-# Prepare output URL and FILENAME
-file_path = os.path.realpath(__file__)
-yml_file = os.path.normpath(os.path.join(file_path, '../config.yml'))
-with open(yml_file, 'r') as yml:
-    settings = yaml.safe_load(yml)
-
-URL = settings['url']
-FILENAME = settings['filename']
+URL = 'https://hs3.pl/'
+FILENAME = 'hs3.html'
 
 ```
 
@@ -136,15 +129,6 @@ if __name__ == "__main__":
 
 ```
 
-#### `config.yml`
-
-```
-url: https://hs3.pl/
-filename: hs3.html
-```
-
-**Najważniejsze elementy**: W tym pliku definiujemy stałe w naszym projekcie. Jest to plik konfiguracyjny wg standardu [YAML](https://yaml.org/).
-
 #### `download.py`
 
 ```python
@@ -198,7 +182,6 @@ def show(url: str):
 Stwórz wirtualne środowisko do dalszej pracy. Powinno być w wersji Pythona 3.6 albo wyższej. Wewnątrz środowiska zainstaluj (teraz) następujące paczki:
 
 - `requests`,
-- `PyYAML`,
 - `pip`,
 - `setuptools`.
 
@@ -267,7 +250,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_desc = f.read()
 
 # obtain version string from __init__.py
-with open(path.join(here, '__init__.py'), 'r') as f:
+with open(path.join(here, 'hsreader/__init__.py'), 'r') as f:
     init_py = f.read()
 version = re.search("__version__ = '(.*)'", init_py).groups()[0]
 
@@ -292,8 +275,7 @@ setup(
     packages=find_packages(exclude=['docs']),
 
     install_requires=[
-        'requests',
-        'pyyaml'
+        'requests'
     ],
     project_urls={
         'Bug Reports': 'https://github.com/szymon-datalions/hsreader/issues',
@@ -326,11 +308,7 @@ description-file = README.md
 
 ### `MANIFEST.in`
 
-W tym pliku dołączamy `include` albo wyłączamy `exclude` pewne fragmenty paczki które chcemy publikować albo nie chcemy. Często będziemy chcieli dodać do paczki dane testowe (`include`) a usunąć katalogi z deweloperską wersją różnych funkcji (`exclude`). W naszej paczce chcemy dodać do jej zawartości plik `yml` w którym znajduje się konfiguracja programu:
-
-```
-include hsreader/*.yml
-```
+W tym pliku dołączamy `include` albo wyłączamy `exclude` pewne fragmenty paczki które chcemy publikować albo nie chcemy. Często będziemy chcieli dodać do paczki dane testowe (`include`) a usunąć katalogi z deweloperską wersją różnych funkcji (`exclude`). W naszym przypadku pozostawiamy plik pusty.
 
 ---
 
@@ -341,3 +319,92 @@ Dotarliśmy do końca etapu konfiguracji! Ważne elementy, które mogą się nam
 - dokumentacja systemu.
 
 Nie jest to jednak temat obowiązkowy i wymagany podczas publikacji paczki.
+
+## Publikcja w testPyPI
+
+Po wykonaniu wszystkich testów jednostkowych czas na publikację! Najpier musimy doinstalować w naszym wirtualnym środowisku menadżer pakietów `twine`:
+
+```bash
+pip install twine
+```
+
+i kolejna paczka wymagana podczas przygotowania projektu to `wheel`:
+
+```bash
+pip install wheel
+```
+
+### Budowa i testy paczki
+
+Paczki udostępniane są jako archiwa, dlatego przed publikacją musimy ją doprowadzić do odpowiedniego stanu. Służy do tego następująca komenda wydawana z powłoki:
+
+```
+python setup.py sdist bdist_wheel
+```
+
+W naszym katalogu z paczką powinny pojawić się dwa nowe katalogi: `dist` i `build`. Jeśli wszystko przebiegło pomyślnie, to już jesteśmy tylko krok od publikacji! Zajrzyjmy jeszcze do środka archiwum z paczką, czy są tam wszystkie potrzebne pliki (ręcznie).
+
+Możemy też użyć `twine` i sprawdzić nasze archiwa:
+
+```
+twine check dist/*
+```
+
+### Wysłanie paczki do testPyPI
+
+Pamiętałeś o rejestracji tutaj:
+
+- **`PyPI`**: [https://pypi.org/account/register/](https://pypi.org/account/register/)
+- **`testPyPI`**: [https://test.pypi.org/account/register/](https://test.pypi.org/account/register/)?
+
+Teraz wykorzystasz **username** i **password** z obu serwisów. Na początek załadujemy naszą paczkę do `testPyPI` i sprawdzimy, czy wszystko działa jak należy:
+
+```
+twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+```
+
+Voila! Paczka dostępna jest pod adresem:
+
+[https://test.pypi.org/project/hsreader/0.1.3/](https://test.pypi.org/project/hsreader/0.1.3/)
+
+Teraz sprawdźmy, czy działa jak należy! Utwórz nowe środowisko wirtualne i zainstaluj w nim paczkę:
+
+```
+pip install -i https://test.pypi.org/pypi/ --extra-index-url https://pypi.org/simple hsreader
+```
+
+Po instalacji sprawdź, czy paczka działa. Wpiszmy w terminalu:
+
+```
+python -m hs3reader -r
+```
+
+Jeśli wszystko działa, jesteśmy gotowi do publikacji w PyPI!
+
+### Publikacja i update w PyPI
+
+Publikacja w PyPI jest analogiczna jak w `testPyPI`. Warto jednak dublować katalogi przed publikacją, bo testy w testPyPI często podbijają wersję (a w PyPI możemy dać przecież niższą). Pewnie zauważyłeś, że paczka w tym poradniku ma już wersję `0.1.3`. Jest to spowodowane uszczelnianiem i poprawkami w kodzie po publikacji w `testPyPI`.
+
+Publikacja w `PyPI` jest prosta i wymaga tylko wpisania:
+
+```
+twine upload dist/*
+```
+
+**Jednakże uważaj z publikacjami!** Na tej platformie powinny znaleźć się dobrze przetestowane i sensowne pakiety. Unikaj publikacji byle-czego.
+
+### Aktualizacja paczki
+
+Paczkę aktualizujemy według schematu:
+
+1. Zmiana wersji paczki.
+2. Usunięcie starej wersji (katalogów `dist` i `build`).
+3. Zbudowanie paczki.
+4. Testy na testPyPI.
+5. Publikacja na PyPI.
+
+## Masz pytania?
+
+- Napisz do mnie: simon@ml-gis-service.com
+- Napisz na Discord: https://discord.gg/GSTgYzU
+- Paczka: https://github.com/szymon-datalions/hsreader

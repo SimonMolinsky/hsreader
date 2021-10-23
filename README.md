@@ -7,13 +7,13 @@ W `Readme.md` powinny znaleźć się podstawowe informacje o projekcie i przykł
 ### Pobranie strony HackerSpace Trójmiasto
 
 ```bash
-python -m hs3city -d
+python -m hs3reader -d
 ```
 
 ### Wczytanie strony HackerSpace Trójmiasto do terminala
 
 ```bash
-python -m hs3city -r
+python -m hs3reader -r
 ```
 
 ## Kontakt:

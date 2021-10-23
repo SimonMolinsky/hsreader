@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_desc = f.read()
 
 # obtain version string from __init__.py
-with open(path.join(here, '__init__.py'), 'r') as f:
+with open(path.join(here, 'hsreader/__init__.py'), 'r') as f:
     init_py = f.read()
 version = re.search("__version__ = '(.*)'", init_py).groups()[0]
 
@@ -33,10 +33,8 @@ setup(
     ],
     keywords=['Tutorials', 'Hacktoberfest 2021'],
     packages=find_packages(exclude=['docs']),
-
     install_requires=[
-        'requests',
-        'pyyaml'
+        'requests'
     ],
     project_urls={
         'Bug Reports': 'https://github.com/szymon-datalions/hsreader/issues',
