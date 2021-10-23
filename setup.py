@@ -20,38 +20,32 @@ setup(
     description='Read and download HackerSpace Trójmiasto webpage',
     long_description=long_desc,
     long_description_content_type='text/markdown',
-    url='https://github.com/szymon-datalions/pyinterpolate',
-    download_url='https://github.com/szymon-datalions/pyinterpolate/archive/v0.2.tar.gz',
+    url='https://github.com/szymon-datalions/hsreader',
+    download_url='https://github.com/szymon-datalions/hsreader/archive/v0.1.0.tar.gz',
     author='Szymon Moliński',
     author_email='simon@ml-gis-service.com',
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Science/Research',
-        'Topic :: Scientific/Engineering :: GIS',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Education',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3'
     ],
-    keywords=['Spatial interpolation', 'Kriging', 'Area Kriging', 'Block Kriging', 'Poisson Kriging', 'Geostatistics'],
-    packages=find_packages(exclude=['data', 'test', 'tutorials', 'new_concepts', 'paper', 'docs',
-        'sample_data', 'developer']),
+    keywords=['Tutorials', 'Hacktoberfest 2021'],
+    packages=find_packages(exclude=['docs']),
 
     install_requires=[
-        'descartes==1.1.0',
-        'geopandas==0.9.0',
-        'matplotlib==3.4.2',
-        'numpy==1.20.3',
-        'pyproj==3.1.0',
-        'scipy==1.6.3',
-        'shapely==1.7.1',
-        'tqdm==4.61.0',
-        'fiona==1.8.20; sys_platform=="darwin"',
-        'rtree>0.9; sys_platform=="darwin"',
-        'fiona==1.8; sys_platform=="linux"',
-        'rtree>=0.8,<0.9; sys_platform=="linux"'],
+        'requests',
+        'pyyaml'
+    ],
     project_urls={
-	'Webpage': 'https://pyinterpolate.com',
-        'Bug Reports': 'https://github.com/szymon-datalions/pyinterpolate/issues',
-        'Sponsor page': 'https://datalions.eu/',
-        'Source': 'https://github.com/szymon-datalions/pyinterpolate/',
+        'Bug Reports': 'https://github.com/szymon-datalions/hsreader/issues',
+        'HackerSpace Trójmiasto Webpage': 'https://hs3.pl/',
+        'HackerSpace Trójmiasto Discord': 'https://discord.gg/GSTgYzU',
+    },
+    entry_points={
+        "console_scripts": [
+            "hsreader=hsreader.__main__:main",
+        ]
     },
 )
